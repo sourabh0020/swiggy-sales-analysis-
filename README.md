@@ -32,17 +32,13 @@
 
 ---
 
-## 🛠️ Tools & Technologies used -
+## 🛠️ Tools & Technologies used and will be used for further analysis -
 
-Python
-Pandas
-Seaborn
-Jupyter
-
-## 🛠️ Tools & Technologies will used further -
-
-SQL SERVER
-Power BI(Data Modelling(Star Schema),DAX,Dashboard) 
+![SQL](https://img.shields.io/badge/SQL-Server-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Power BI](https://img.shields.io/badge/Power_BI-F2C811?style=for-the-badge&logo=powerbi&logoColor=black)
+![Excel](https://img.shields.io/badge/Excel-217346?style=for-the-badge&logo=microsoftexcel&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)
 
 ---
 
