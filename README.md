@@ -34,11 +34,12 @@
 
 ## 🛠️ Tools & Technologies used and will be used for further analysis -
 
-![SQL](https://img.shields.io/badge/SQL-Server-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Power BI](https://img.shields.io/badge/Power_BI-F2C811?style=for-the-badge&logo=powerbi&logoColor=black)
-![Excel](https://img.shields.io/badge/Excel-217346?style=for-the-badge&logo=microsoftexcel&logoColor=white)
-![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.11-blue?style=flat-square&logo=python)
+![Pandas](https://img.shields.io/badge/Pandas-2.0-lightblue?style=flat-square)
+![Seaborn](https://img.shields.io/badge/Seaborn-Visualization-teal?style=flat-square)
+![SQL Server](https://img.shields.io/badge/SQL_Server-2022-red?style=flat-square&logo=microsoftsqlserver)
+![Power BI](https://img.shields.io/badge/Power_BI-Dashboard-yellow?style=flat-square&logo=powerbi)
+![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-orange?style=flat-square&logo=jupyter)
 
 ---
 
