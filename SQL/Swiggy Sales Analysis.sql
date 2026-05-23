@@ -8,10 +8,10 @@ dim_table   - dim_date
 
 ------------------------------------------------------------------------------------------------------------------------------------------
 --> Basic Business Queries                                                                                                                |
---> KPIs, order volumes, price stats — essential executive metrics                                                                        |
+--> KPIs, order volumes, price stats â€” essential executive metrics                                                                        |
 ------------------------------------------------------------------------------------------------------------------------------------------
-/* Q1 — Business KPI Summary */
-/* Total orders, total revenue, AOV, avg rating, min, max price — the headline numbers */
+/* Q1 â€” Business KPI Summary */
+/* Total orders, total revenue, AOV, avg rating, min, max price â€” the headline numbers */
 
 select  
     count(*)    as Total_orders,
@@ -28,7 +28,7 @@ Total_orders	Total_revenue	Average_order_value	  Average_rating	min_order_price 
 197430	         53012506	    268.51	              4.34          	0.95	            8000
 */ 
 
-/* Q2 — Price Distribution Bands */
+/* Q2 â€” Price Distribution Bands */
 /* Bucket orders into price segments to understand customer spend behaviour */
 
 select 
@@ -55,15 +55,14 @@ order by Band_revenue desc;
 
 /* OUTPUT :
 Price_band	order_counts	Band_revenue	pct_orders
-249-500	    70933	        24001133.17	    35.93
-100-249	    84191	        14812914.90	    42.64
-500-749	    10077	        6166669.90	    5.10
+250-499	    70733	        23901885.54	    35.83
+100-249	    84194	        14813662.53	    42.64
+500-999	    13387	        8924220.13	    6.78
 1000+	    2313	        3570585.39	    1.17
-749-999	    3113	        2659050.23	    1.58
 Under 100	26803	        1802152.18	    13.58
 */
 
-/*  Q3 — Rating Distribution
+/*  Q3 â€” Rating Distribution
 How orders spread across rating bands (1.5 to 5.0) */
 
 select 
