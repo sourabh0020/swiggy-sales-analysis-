@@ -66,22 +66,23 @@ Under 100	26803	        1802152.18	    13.58
 How orders spread across rating bands (1.5 to 5.0) */
 
 select 
-     floor(rating*2)/2       as rating_band,
-	 count(*)                as order_counts,
-	 cast(avg(price) as decimal(10,2))              as avg_price_at_ratings
+     floor(rating*2)/2 as rating_band,
+	 count(*) as order_counts,
+	 cast(avg(price) as decimal(10,2)) as avg_price_at_ratings,
+	 cast(100.0*(count(*))/(sum(count(*)) over ()) as decimal(10,2)) as order_pct
 from fact_orders
 group by floor(rating*2)/2 
-order by rating_band;
+order by rating_band desc;
 
 /*
 OUTPUT:
-rating_band	order_counts	avg_price_at_ratings
-1.5	        224	            282.78
-2	        1078	        267.75
-2.5	        2136	        253.71
-3	        5056	        252.77
-3.5	        14594	        247.89
-4	        120536	        276.95
-4.5	        44403	        248.88
-5	        9403	        296.67
+rating_band	order_counts	avg_price_at_ratings	order_pct
+5	        9403	        296.67	                4.76
+4.5	        44403	        248.88	                22.49
+4	        120536	        276.95	                61.05
+3.5	        14594	        247.89	                7.39
+3	        5056	        252.77	                2.56
+2.5	        2136	        253.71	                1.08
+2	        1078	        267.75	                0.55
+1.5	         224	        282.78	                0.11
 */
