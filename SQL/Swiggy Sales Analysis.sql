@@ -86,3 +86,126 @@ rating_band	order_counts	avg_price_at_ratings	order_pct
 2	        1078	        267.75	                0.55
 1.5	         224	        282.78	                0.11
 */
+
+------------------------------------------------------------------------------------------------------------------------------------------
+/* Restaurant Analysis                                                                                                                   |
+Revenue leaders, AOV comparisons, rating performance */                                                                                  |                                                                                                                        
+------------------------------------------------------------------------------------------------------------------------------------------
+
+/* Q4 — Top 10 Restaurants by Revenue
+Revenue, order count, AOV and avg rating per restaurant */
+
+select top 10 r.restaurant_name,
+       count(o.order_id)     as total_orders,
+	   round(sum(price),2)          as Total_Revenue,
+	   round(avg(price),2)   as avg_order_value,
+	   round(avg(rating),2)           as avg_rating
+from fact_orders o
+join 
+     dim_restaurants r
+  on o.restaurant_id = r.restaurant_id
+  group by r.restaurant_name
+  order by Total_Revenue desc;
+
+/* Output(Example) : (real output having 10 rows)
+restaurant_name	                 total_orders	Total_Revenue	avg_order_value	   avg_rating
+KFC	                              12961	         4246951.7	      327.67	        4.3
+McDonald's	                      13530	         3343094.58       247.09	        4.4
+Pizza Hut	                      6529	         2133265.69	      326.74	        4.2
+Burger King	                      7116	         1900817.09	      267.12	        4.34
+Domino's Pizza	                  5492           1834022.32	      333.94	        4.37
+Olio - The Wood Fired Pizzeria	  3241	         1236369	      381.48	        4.29
+*/
+
+
+/* Q5 — High Rating, Low Volume
+Restaurants with avg rating ≥ 4.5 but fewer than 500 orders — underutilised quality */
+
+select r.restaurant_name,
+       count(o.order_id)       as total_orders,
+	   round(avg(o.price),2)   as avg_order_value,
+	   round(avg(o.rating),2)  as avg_rating
+from fact_orders o
+join 
+     dim_restaurants r
+  on o.restaurant_id = r.restaurant_id
+  group by r.restaurant_name
+  having avg(o.rating) >= 4.5 and count(o.order_id) < 500
+order by avg_rating desc;
+
+/* Output(Example) : (real output having 101 rows)
+restaurant_name	                         total_orders	    avg_order_value	     avg_rating
+Sakana	                                 95	                484.32	             4.82
+Vijay Dairy	                             52	                165.87	             4.75
+Jagannath Mandir Arna Prasad	         8	                58.75	             4.75
+I Deli Cafe	                             47	                148.68	             4.74
+Radhey Lal's Parampara Sweets	         84	                225	                 4.74
+Yadav Doodh Dairy	                     70              	449.16               4.73
+*/
+
+/* Q6 — Revenue vs Order Volume Quadrant Prep
+Classifies each restaurant into 4 quadrants: Star / Volume Leader / Premium / Laggard */
+
+WITH RestaurantStats AS (
+    SELECT
+        r.restaurant_name,
+        COUNT(o.order_id)              AS total_orders,
+        ROUND(SUM(o.price), 0)        AS total_revenue,
+        ROUND(AVG(o.price), 2)        AS avg_order_value
+    FROM fact_orders o
+    JOIN dim_restaurants r ON o.restaurant_id = r.restaurant_id
+    GROUP BY r.restaurant_name
+),
+Medians AS (
+    SELECT
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY total_revenue)  OVER() AS med_revenue,   
+		-- Median is preferred over average because the dataset
+        -- contains extreme outliers that can skew mean values.
+        -- Using median creates a more reliable benchmark for
+        -- restaurant performance segmentation.
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY total_orders)  OVER() AS med_orders    
+    FROM RestaurantStats                                                                   
+)
+SELECT
+    rs.restaurant_name,
+    rs.total_revenue,
+    rs.total_orders,
+    rs.avg_order_value,
+    CASE
+        WHEN rs.total_revenue >= m.med_revenue AND rs.total_orders >= m.med_orders THEN 'Star'
+        WHEN rs.total_revenue <  m.med_revenue AND rs.total_orders >= m.med_orders THEN 'Volume Leader'
+        WHEN rs.total_revenue >= m.med_revenue AND rs.total_orders <  m.med_orders THEN 'Premium'
+        ELSE 'Laggard'
+    END AS quadrant
+FROM RestaurantStats rs
+CROSS JOIN (
+    SELECT DISTINCT med_revenue, med_orders FROM Medians    
+	-- DISTINCT ensures only one median row is returned.
+    -- CROSS JOIN attaches these benchmark values to each restaurant record.
+) m
+ORDER BY rs.total_revenue DESC;
+
+
+/* OUTPUT(Example) : (real output has 984 rows of all restaurant data)
+restaurant_name	              total_revenue	    total_orders	avg_order_value	   quadrant
+KFC	                          4246952	         12961	         327.67	            Star
+McDonald's	                  3343095	         13530	         247.09	            Star
+Pizza Hut	                  2133266	         6529	         326.74	            Star
+Burger King	                  1900817	         7116	         267.12	            Star
+Domino's Pizza	              1834022	         5492	         333.94          	Star
+Olio-The Wood Fired Pizzeria  1236369	         3241	         381.48	            Star
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
