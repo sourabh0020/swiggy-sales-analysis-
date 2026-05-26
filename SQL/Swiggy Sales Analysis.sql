@@ -255,9 +255,9 @@ Which days drive the most orders and the highest AOV
 select 
      d.day_of_week,
 	 d.is_weekend,
-	 count(o.order_id)          as Total_orders,
-	 round(sum(o.price),0)               as total_revenue,
-	 round(avg(o.price),2)      as Total_price
+	 count(o.order_id)           as Total_orders,
+	 round(sum(o.price),0)       as total_revenue,
+	 round(avg(o.price),2)       as AOV
 from fact_orders o
 inner join dim_date d
 on o.date_id =  d.date_id
@@ -265,7 +265,7 @@ group by d.day_of_week,d.is_weekend
 
 /*
 Output:
-day_of_week	is_weekend	Total_orders	total_revenue	Total_price
+day_of_week	is_weekend	Total_orders	total_revenue	AOV
 Friday	    0	        28288	         7579993	     267.96
 Monday	    0	        27571	         7445437	     270.05
 Thursday	0	        28457	         7664619	     269.34
@@ -284,7 +284,7 @@ select
      case when d.is_weekend = 1 then 'weekend' else 'weekday' end as day_type,
 	 count(o.order_id)                                                     as Total_orders,
 	 round(sum(o.price),0)                                                 as total_revenue,
-	 round(avg(o.price),2)                                                 as Total_price,
+	 round(avg(o.price),2)                                                 as AOV,
 	 sum(count(o.order_id)) over ()                                        as Overall_orders,
 	 round((count(o.order_id)*100.0)/sum(count(o.order_id)) over (),2)     as Percentage_of_orders
 from fact_orders o
@@ -294,7 +294,7 @@ group by case when d.is_weekend = 1 then 'weekend' else 'weekday' end
 
 /* 
 OUTPUT:
-day_type	Total_orders	total_revenue	Total_price	Overall_orders	Percentage_of_orders
+day_type	Total_orders	total_revenue	 AOV   	Overall_orders	Percentage_of_orders
 weekday	     140018	         37591566	    268.48	     197430       	70.920000000000
 weekend	     57412	         15420939	    268.6	     197430      	29.080000000000
 */
