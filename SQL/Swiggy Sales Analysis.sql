@@ -196,9 +196,108 @@ Domino's Pizza	              1834022	         5492	         333.94          	Sta
 Olio-The Wood Fired Pizzeria  1236369	         3241	         381.48	            Star
 */
 
+------------------------------------------------------------------------------------------------------------------------------------------
+/* Time & Trend Queries                                                                                                                  |
+Monthly trends, weekday patterns, MoM growth */                                                                                          |                                                                                                                        
+------------------------------------------------------------------------------------------------------------------------------------------
 
+/* 
+Q7 — Monthly Revenue & Orders Trend
+Jan–Aug 2025 trend with MoM revenue growth %
+*/
 
+with Current_amount_data as
+(
+ select
+    d.year                           as year,
+	d.month                          as month,
+	d.month_name                     as month_name,
+	count(o.order_id)                as Total_orders,
+	sum(o.price)                     as Total_Revenue,
+	round(AVG(o.price),2)            as AOV
+ from fact_orders o
+ inner join dim_date d
+ on o.date_id = d.date_id
+ group by d.year,d.month,d.month_name  
+), Previous_amount as 
+(
+ select * , 
+     LAG(Total_Revenue) over (order by year,month) as pre_month_revenue
+ from Current_amount_data
+ )
+select year,
+       month,
+	   month_name,
+	   Total_orders,
+	   AOV,Total_Revenue,
+	   pre_month_revenue,
+       round(100.0*(Total_Revenue-pre_month_revenue)/nullif((pre_month_revenue),0),2) as MoM_percentage
+from Previous_amount
 
+/*
+Output:
+year	month	month_name	Total_orders	AOV	     Total_Revenue	pre_month_revenue	MoM_percentage
+2025	1	    Jan	        25398	        268.73	   6825186.03	NULL	            NULL
+2025	2	    Feb	        23296	        269.11	   6269105.67	6825186.03	       -8.15
+2025	3	    Mar	        24402	        269.38	   6573530.07	6269105.67	        4.86
+2025	4	    Apr	        24588	        268.2	   6594515	    6573530.07	        0.32
+2025	5	    May	        25190	        269.69	   6793558.4	6594515	            3.02
+2025	6	    Jun	        24385	        267.14	   6514183.19	6793558.4	       -4.11
+2025	7	    Jul	        24940	        266.68	   6650965.51	6514183.19	        2.1
+2025	8	    Aug	        25231	        269.17	   6791461.9	6650965.51	        2.11
+*/
+
+/*
+Q8 — Day of Week Performance
+Which days drive the most orders and the highest AOV
+*/
+
+select 
+     d.day_of_week,
+	 d.is_weekend,
+	 count(o.order_id)          as Total_orders,
+	 round(sum(o.price),0)               as total_revenue,
+	 round(avg(o.price),2)      as Total_price
+from fact_orders o
+inner join dim_date d
+on o.date_id =  d.date_id
+group by d.day_of_week,d.is_weekend
+
+/*
+Output:
+day_of_week	is_weekend	Total_orders	total_revenue	Total_price
+Friday	    0	        28288	         7579993	     267.96
+Monday	    0	        27571	         7445437	     270.05
+Thursday	0	        28457	         7664619	     269.34
+Tuesday	    0	        27415	         7359414	     268.44
+Wednesday	0	        28287	         7542103	     266.63
+Saturday	1	        28938	         7782935	     268.95
+Sunday	    1	        28474	         7638004	     268.24
+*/
+
+/*
+Q9 — Weekend vs Weekday Full Comparison
+Revenue, orders, AOV and revenue share split by weekday/weekend
+*/
+
+select 
+     case when d.is_weekend = 1 then 'weekend' else 'weekday' end as day_type,
+	 count(o.order_id)                                                     as Total_orders,
+	 round(sum(o.price),0)                                                 as total_revenue,
+	 round(avg(o.price),2)                                                 as Total_price,
+	 sum(count(o.order_id)) over ()                                        as Overall_orders,
+	 round((count(o.order_id)*100.0)/sum(count(o.order_id)) over (),2)     as Percentage_of_orders
+from fact_orders o
+inner join dim_date d
+on o.date_id =  d.date_id
+group by case when d.is_weekend = 1 then 'weekend' else 'weekday' end
+
+/* 
+OUTPUT:
+day_type	Total_orders	total_revenue	Total_price	Overall_orders	Percentage_of_orders
+weekday	     140018	         37591566	    268.48	     197430       	70.920000000000
+weekend	     57412	         15420939	    268.6	     197430      	29.080000000000
+*/
 
 
 
