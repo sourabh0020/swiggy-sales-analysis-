@@ -299,9 +299,113 @@ weekday	     140018	         37591566	    268.48	     197430       	70.920000000
 weekend	     57412	         15420939	    268.6	     197430      	29.080000000000
 */
 
+------------------------------------------------------------------------------------------------------------------------------------------
+/*Geography Queries                                                                                                                      |    
+City, state, and locality-level performance across 28 cities and 28 states */                                                            |                                                                                                                        
+------------------------------------------------------------------------------------------------------------------------------------------
 
+/* 
+Q10 — State-Level Revenue Ranking
+Roll up from city to state — includes revenue rank across all 28 states
+*/
 
+select 
+     l.state                          as state,
+	 count(*)                         as total_orders,
+	 round(sum(o.price),0)                     as total_revenue,
+	 round(AVG(o.price),2)                     as AOV_State_wise,
+	 Row_number() over (order by round(sum(o.price),0) desc) as Revenue_rnk
+from fact_orders o 
+inner join 
+dim_locations l
+on o.location_id =l.location_id
+group by l.state
 
+/*
+OUTPUT :(sample of 10 state real out have 28 state data) 
+state	         total_orders	      total_revenue	    AOV_State_wise   	Revenue_rnk
+Karnataka       	20077	            5456798	         271.79	                1
+Uttar Pradesh	    10192	            3117360	         305.86	                2
+Telangana	        10309	            3021712	         293.11	                3
+Maharashtra	        10507	            3015573	         287.01	                4
+Delhi	            10191	            2829181	         277.62	                5
+Gujarat          	10185	            2817836	         276.67	                6
+Punjab	            10065	            2809441	         279.13             	7
+West Bengal	        10046	            2662802	         265.06	                8
+Tamil Nadu	        10042	            2642595	         263.15	                9
+Rajasthan	        10286	            2502933	         243.33	                10
+*/
+
+/*
+Q11 — Top 10 Cities by Revenue + AOV
+Revenue leaders vs AOV leaders — often different cities
+*/
+SELECT TOP 10
+    l.city,
+    l.state,
+    COUNT(o.order_id)          AS total_orders,
+    ROUND(SUM(o.price), 0)    AS total_revenue,
+    ROUND(AVG(o.price), 2)    AS avg_order_value,
+    ROUND(AVG(o.rating), 2)   AS avg_rating
+FROM fact_orders o
+JOIN dim_locations l ON o.location_id = l.location_id
+GROUP BY l.city, l.state
+ORDER BY total_revenue DESC;
+
+/*
+OUTPUT:
+city	        state	     total_orders	total_revenue	avg_order_value	  avg_rating
+Bengaluru	    Karnataka	    20077	      5456798	      271.79	       4.31
+Lucknow      	Uttar Pradesh	10192	      3117360	      305.86	       4.37
+Hyderabad	    Telangana	    10309	      3021712	      293.11	       4.27
+Mumbai       	Maharashtra   	10507	      3015573	      287.01       	   4.34
+New Delhi     	Delhi	        10191	      2829181	      277.62	       4.34
+Ahmedabad	    Gujarat	        10185	      2817836	      276.67	       4.39
+Chandigarh	    Punjab	        10065	      2809441	      279.13	       4.34
+Kolkata	        West Bengal	    10046	      2662802	      265.06	       4.41
+Chennai	        Tamil Nadu	    10042	      2642595	      263.15	       4.37
+Jaipur	        Rajasthan	    10286	      2502933	      243.33	       4.34
+*/
+
+/*
+Q12 — Top Restaurant per City (Window Function)
+Finds the #1 revenue restaurant in every city — a recruiter favourite
+*/
+
+WITH CityRestaurantRevenue AS (
+    SELECT
+        l.city,
+        r.restaurant_name,
+        ROUND(SUM(o.price), 0)  AS total_revenue,
+        COUNT(o.order_id)        AS total_orders,
+        RANK() OVER (
+            PARTITION BY l.city
+            ORDER BY SUM(o.price) DESC
+        )                        AS city_rank
+    FROM fact_orders o
+    JOIN dim_locations l    ON o.location_id   = l.location_id
+    JOIN dim_restaurants r  ON o.restaurant_id = r.restaurant_id
+    GROUP BY l.city, r.restaurant_name
+)
+SELECT city, restaurant_name, total_revenue, total_orders
+FROM   CityRestaurantRevenue
+WHERE  city_rank = 1
+ORDER BY total_revenue DESC;
+
+/*
+OUTPUT: (sample of 10 city wise restaurant, real out have 28 state data)
+city	      restaurant_name	    total_revenue	  total_orders
+Bengaluru	   McDonald's	         516114          	2032
+Ahmedabad	    KFC	                 451872	            1277
+Chandigarh	    KFC	                 374991	            1066
+Mumbai	        McDonald's	         352902	            1426
+Chennai	        McDonald's	         323675	            1227
+Kolkata	        KFC	                 292348	            971
+Lucknow	        KFC	                 280658	            932
+Indore	        McDonald's	         280008	            1101
+Hyderabad	    Labonel Fine Baking	 272780	            154
+New Delhi	    McDonald's	         262082	            1205
+*/
 
 
 
