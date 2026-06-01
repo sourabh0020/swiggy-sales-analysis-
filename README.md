@@ -154,8 +154,7 @@ jupyter notebook notebooks/Swiggy_sales_analysis.ipynb
 
 - [x] Data cleaning & EDA in Python
 - [x] Category-wise revenue, AOV, and order analysis
-- [ ] SQL Server DDL — create tables, load CSVs
-- [ ] 20+ business SQL queries (KPIs, window functions, CTEs)
+- [x] 20 business SQL queries (KPIs, window functions, CTEs)
 - [ ] Power BI star schema data model
 - [ ] Power BI 4-page interactive dashboard
 - [ ] Dashboard screenshot in README
