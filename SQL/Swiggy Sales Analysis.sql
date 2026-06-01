@@ -407,6 +407,103 @@ Hyderabad	    Labonel Fine Baking	 272780	            154
 New Delhi	    McDonald's	         262082	            1205
 */
 
+------------------------------------------------------------------------------------------------------------------------------------------
+/*Dish & Category Queries                                                                                                                |
+Menu performance, category revenue, top dishes — 82,891 unique dishes */                                                                 |                                                                                                                        
+------------------------------------------------------------------------------------------------------------------------------------------
+
+/* Q13 — Revenue by Food Category
+Which categories (Biryani, Pizza, Combos, etc.) drive the most revenue */
+
+select d.category,
+      count(o.order_id)                                     as total_orders,
+	  ROUND(sum(o.price),0)                                 as total_revenue,
+	  ROUND(avg(o.price),2)                                 as AOV,
+	  ROUND(avg(o.rating),2)                                as avg_rating,
+	  round(sum(o.price)*100.0/sum(sum(o.price)) over (),2) as prt_of_total
+from fact_orders o
+left join dim_dish d
+on o.food_id = d.dish_id
+group by d.category
+order by total_revenue desc
+
+/*
+OUTPUT :(sample output real output have 4690 rows )
+category                              	total_orders	total_revenue	AOV	   avg_rating	prt_of_total
+Recommended	                             24100	         7188937	    298.3	4.32	      13.56
+Main Course	                             2983	         767175	        257.18	4.31	       1.45
+BURGERS	                                 2539	         695149      	273.79	4.32	       1.31
+Burger Combos 3 Pc Meals 	             1331	         507774	        381.5	4.38	       0.96
+Desserts	                             3583	         500728	        139.75	4.37	       0.94
+Sweets	                                 1954	         475068	        243.13	4.46	       0.9
+McSaver Combos 2 Pc Meals	             1885	         431697	        229.02	4.41	       0.81
+ROLLS	                                 1652	         410716	        248.62	4.25	       0.77
+Starters	                             1692	         407731     	240.98	4.3	           0.77
+Korean Spicy FestLimited Time Only	     1180	         405191	        343.38	4.36	       0.76
+*/
+
+/* Q14 — Top 10 Dishes by Revenue
+Individual dish performance with revenue share */
+
+SELECT TOP 10
+    dd.dish_name,
+    dd.category,
+    COUNT(o.order_id)              AS total_orders,
+    ROUND(SUM(o.price), 0)        AS total_revenue,
+    ROUND(AVG(o.price), 2)        AS avg_price
+FROM fact_orders o
+JOIN dim_dish dd ON o.food_id = dd.dish_id
+GROUP BY dd.dish_name, dd.category
+ORDER BY total_revenue DESC;
+
+/*
+OUTPUT:
+dish_name	                                                 category	                 total_orders	total_revenue	avg_price
+Full House Popcorn Chicken Bucket	                         Boneless Chicken Popcorn	   66	         79200          	1200
+Big 12 Chicken Bucket	                      EPIC SAVINGS BUCKET FOR 34 UP TO 32 OFF	   85	         69738	            820.45
+Hot Crispy Chicken 8 pcs	                  Hot & Crispy Chicken & Wings	               84	         67360	            801.9
+Ultimate Savings Chicken Bucket               EPIC SAVINGS BUCKET FOR 34 UP TO 32 OFF	   84	         64612	            769.19
+Chicken Supreme Thin n Crispy	              Thin n Crispy Pizzas	                       67	         63583	            949
+Big 8 Chicken Bucket	                      Epic Savings Bucket For 34 up To 32 Off	   80	         61528	            769.09
+Big Big 6in1 Pizza Non Veg	                  Big Big Pizza                                27	         59373	            2199
+Chicken Pepperoni Thin n Crispy	              Thin n Crispy Pizzas                         67	         56883           	849
+Kids Birthday Pizza Party with Chocolate 	  Kids Special  Pizza Party	                   15	         52485	            3499
+Bold BBQ Veggie Thin n Crispy	              Thin n Crispy Pizzas	                       70	         52430	            749
+*/
+
+/*
+Q15 — Category Performance by City
+What food categories dominate in each city — useful for geo-menu insights
+*/
+WITH CityCategoryRev AS (
+    SELECT
+        l.city,
+        dd.category,
+        ROUND(SUM(o.price), 0)  AS total_revenue,
+        RANK() OVER (
+            PARTITION BY l.city
+            ORDER BY SUM(o.price) DESC
+        )                        AS cat_rank
+    FROM fact_orders o
+    JOIN dim_dish dd      ON o.food_id     = dd.dish_id
+    JOIN dim_locations l  ON o.location_id  = l.location_id
+    GROUP BY l.city, dd.category
+)
+SELECT city, category AS top_category, total_revenue
+FROM   CityCategoryRev
+WHERE  cat_rank = 1
+ORDER BY total_revenue DESC;
+
+/*
+OUTPUT: Sample (Note : Only shimla shows Sweets as top_category rest are recommended user prefrence is food recommend by swiggy)
+city	    top_category	total_revenue
+Bengaluru	Recommended	    960832
+Hyderabad	Recommended	    555363
+Lucknow   	Recommended	    526622
+New Delhi	Recommended	    498087
+Chandigarh	Recommended	    450606
+Kolkata	    Recommended	    450325
+*/
 
 
 
