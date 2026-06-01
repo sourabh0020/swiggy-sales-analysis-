@@ -163,7 +163,7 @@ jupyter notebook notebooks/Swiggy_sales_analysis.ipynb
 
 ## 🧠 Skills Demonstrated
 
-`Exploratory Data Analysis` · `Star Schema / Data Modeling` · `Feature Engineering` · `Outlier Detection (IQR)` · `Category & Menu Analysis` · `pandas` · `seaborn` · `matplotlib` · `Business Insight Communication` ,  `SQL(Advance Queries) `
+`Exploratory Data Analysis` · `Star Schema / Data Modeling` · `Feature Engineering` · `Outlier Detection (IQR)` · `Category & Menu Analysis` · `pandas` · `seaborn` · `matplotlib` · `Business Insight Communication` ,  `SQL(KPIs, window functions, CTEs) `
 
 ---
 
