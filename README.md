@@ -10,7 +10,7 @@
 | Phase | Tool | Status |
 |---|---|---|
 | Data Cleaning & EDA | Python (pandas, seaborn) | ✅ Complete |
-| Business Queries | SQL Server | 🔄 In Progress |
+| Business Queries | SQL Server | ✅ Complete |
 | Dashboard | Power BI | 🔄 In Progress |
 
 ---
@@ -112,7 +112,7 @@ swiggy-sales-analysis/
 ├── notebooks/
 │   └── Swiggy_sales_analysis.ipynb
 │
-├── sql/                          ← coming soon
+├── sql/                          
 │   ├── 01_create_tables.sql
 │   ├── 02_basic_kpi_queries.sql
 │   ├── 03_restaurant_analysis.sql
@@ -164,7 +164,7 @@ jupyter notebook notebooks/Swiggy_sales_analysis.ipynb
 
 ## 🧠 Skills Demonstrated
 
-`Exploratory Data Analysis` · `Star Schema / Data Modeling` · `Feature Engineering` · `Outlier Detection (IQR)` · `Category & Menu Analysis` · `pandas` · `seaborn` · `matplotlib` · `Business Insight Communication`
+`Exploratory Data Analysis` · `Star Schema / Data Modeling` · `Feature Engineering` · `Outlier Detection (IQR)` · `Category & Menu Analysis` · `pandas` · `seaborn` · `matplotlib` · `Business Insight Communication` ,  `SQL(Advance Queries) `
 
 ---
 
