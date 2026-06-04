@@ -53,7 +53,8 @@ group by
 	end
 order by Band_revenue desc;
 
-/* OUTPUT :
+/* OUTPUT : Price till 500 acquire maximum percentage of market revenue.Indicate that customer look for low prices .We can focus more into this segment by giving 
+voucher and disccounts.
 Price_band	order_counts	Band_revenue	pct_orders
 250-499	    70733	        23901885.54	    35.83
 100-249	    84194	        14813662.53	    42.64
@@ -369,7 +370,7 @@ Jaipur	        Rajasthan	    10286	      2502933	      243.33	       4.34
 
 /*
 Q12 — Top Restaurant per City (Window Function)
-Finds the #1 revenue restaurant in every city — a recruiter favourite
+Finding the #1 revenue restaurant in every city 
 */
 
 WITH CityRestaurantRevenue AS (
@@ -495,7 +496,7 @@ WHERE  cat_rank = 1
 ORDER BY total_revenue DESC;
 
 /*
-OUTPUT: Sample (Note : Only shimla shows Sweets as top_category rest are recommended user prefrence is food recommend by swiggy)
+OUTPUT: Sample (Note: Only Shimla shows Sweets as top_category, the rest are choosing "recommended" as user preference, which is food recommended by Swiggy)
 city	    top_category	total_revenue
 Bengaluru	Recommended	    960832
 Hyderabad	Recommended	    555363
@@ -505,7 +506,173 @@ Chandigarh	Recommended	    450606
 Kolkata	    Recommended	    450325
 */
 
+/*
+Advanced SQL — Window Functions & CTEs
+*/
+/*
+Q16 — Running Total Revenue by Month
+Cumulative revenue using SUM() OVER — shows business growth trajectory
+*/
+SELECT
+    d.month_name,
+    d.month,
+    ROUND(SUM(o.price), 0) AS monthly_revenue,
+    ROUND(SUM(SUM(o.price)) OVER (
+        ORDER BY d.year, d.month
+        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    ), 0)                   AS cumulative_revenue
+FROM fact_orders o
+JOIN dim_date d ON o.date_id = d.date_id
+GROUP BY d.year, d.month, d.month_name
+ORDER BY d.year, d.month;
 
+/*
+month_name	month	monthly_revenue	 cumulative_revenue
+Jan         	1	  6825186	          6825186
+Feb	            2	  6269106             13094292
+Mar	            3	  6573530	          19667822
+Apr	            4	  6594515	          26262337
+May	            5	  6793558	          33055895
+Jun	            6	  6514183	          39570078
+Jul	            7	  6650966	          46221044
+Aug	            8     6791462	          53012506
+*/
+
+/*
+Q17 — Restaurant Revenue Percentile Ranking
+NTILE(4) to classify every restaurant into revenue quartiles
+*/
+
+WITH RestRevenue AS (
+    SELECT
+        r.restaurant_name,
+        ROUND(SUM(o.price), 0) AS total_revenue
+    FROM fact_orders o
+    JOIN dim_restaurants r ON o.restaurant_id = r.restaurant_id
+    GROUP BY r.restaurant_name
+)
+SELECT
+    restaurant_name,
+    total_revenue,
+    NTILE(4) OVER (ORDER BY total_revenue DESC) AS quartile,
+    ROUND(PERCENT_RANK() OVER (ORDER BY total_revenue), 4) AS percentile_rank
+FROM RestRevenue
+ORDER BY total_revenue DESC;
+
+/*
+OUTPUT:(sample output real output have 984 rows)
+restaurant_name	      total_revenue   	quartile	percentile_rank
+KFC	                     4246952	      1          	1
+McDonald's	             3343095	      1	           0.999
+Pizza Hut                2133266	      1	           0.998
+Burger King	             1900817	      1            0.9969
+Domino's Pizza	         1834022	      1	           0.9959
+*/
+
+/*
+Q18 — Month-over-Month Revenue Change (LAG)
+*/
+
+WITH Monthly AS (
+    SELECT
+        d.year, d.month, d.month_name,
+        ROUND(SUM(o.price), 0) AS revenue
+    FROM fact_orders o
+    JOIN dim_date d ON o.date_id = d.date_id
+    GROUP BY d.year, d.month, d.month_name
+)
+SELECT
+    month_name,
+    revenue,
+    LAG(revenue) OVER (ORDER BY year, month) AS prev_revenue,
+    revenue - LAG(revenue) OVER (ORDER BY year, month) AS absolute_change,
+    ROUND(
+        (revenue - LAG(revenue) OVER (ORDER BY year, month))
+        * 100.0
+        / NULLIF(LAG(revenue) OVER (ORDER BY year, month), 0)
+    , 2)                                         AS pct_change
+FROM Monthly
+ORDER BY year, month;
+
+/*
+OUTPUT:
+month_name	revenue  	prev_revenue	absolute_change 	pct_change
+Jan	         6825186	NULL	          NULL	             NULL
+Feb        	 6269106	6825186	         -556080	        -8.15
+Mar	         6573530	6269106	          304424	         4.86
+Apr          6594515	6573530	          20985	             0.32
+May	         6793558	6594515       	  199043	         3.02
+Jun	         6514183	6793558	         -279375	        -4.11
+Jul	         6650966	6514183	          136783        	 2.1
+Aug	         6791462	6650966	          140496	         2.11
+*/
+
+/*
+19 — 3-Month Rolling Average Revenue
+*/
+
+WITH Monthly AS (
+    SELECT d.year, d.month, d.month_name,
+           ROUND(SUM(o.price), 0) AS revenue
+    FROM fact_orders o
+    JOIN dim_date d ON o.date_id = d.date_id
+    GROUP BY d.year, d.month, d.month_name
+)
+SELECT
+    month_name,
+    revenue,
+    ROUND(AVG(CAST(revenue AS FLOAT)) OVER (
+        ORDER BY year, month
+        ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+    ), 0) AS rolling_3m_avg
+FROM Monthly
+ORDER BY year, month;
+
+/*
+OUTPUT:
+month_name	revenue	  rolling_3m_avg
+Jan      	6825186	    6825186
+Feb	        6269106	    6547146
+Mar	        6573530	    6555941
+Apr      	6594515	    6479050
+May	        6793558   	6653868
+Jun      	6514183	    6634085
+Jul	        6650966  	6652902
+Aug	        6791462 	6652204
+*/
+
+/*
+20. Top 3 Dishes per Category (DENSE_RANK)
+Best performing dish in every food category — great for menu decisions
+*/
+
+WITH DishRevenue AS (
+    SELECT
+        dd.category,
+        dd.dish_name,
+        COUNT(o.order_id)              AS total_orders,
+        ROUND(SUM(o.price), 0)        AS total_revenue,
+        DENSE_RANK() OVER (
+            PARTITION BY dd.category
+            ORDER BY SUM(o.price) DESC
+        )                               AS rank_in_cat
+    FROM fact_orders o
+    JOIN dim_dish dd ON o.food_id = dd.dish_id
+    GROUP BY dd.category, dd.dish_name
+)
+SELECT category, dish_name, total_orders, total_revenue, rank_in_cat
+FROM   DishRevenue
+WHERE  rank_in_cat <= 3
+ORDER BY category, rank_in_cat;
+
+/*
+OUTPUT:(sample output)
+category	                              dish_name	                               total_orders	 total_revenue	rank_in_cat
+1 1 BOGO @ 179 each CouponsÂ Applicable	  2 Half KG Biryanis 179 each	              2	         716	           1
+1 1 BOGO Biryani at 179 Each	          2 NonVeg Half Kg Biryani at 229 	          9	         4122	           1
+1 1 BOGO Biryani at 179 Each	     1 Veg 1 NonVeg Half Kg Biryani at 229            9	         4122	           1
+1 1 BOGO Biryani at 179 Each        2 Veg Half Kg Biryani at 229 Each Eligible        9	         4122	           1
+*/
 
 
 
