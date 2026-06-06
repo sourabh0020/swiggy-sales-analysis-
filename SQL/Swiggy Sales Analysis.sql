@@ -674,5 +674,73 @@ category	                              dish_name	                               
 1 1 BOGO Biryani at 179 Each        2 Veg Half Kg Biryani at 229 Each Eligible        9	         4122	           1
 */
 
+/*  Q21 — Restaurant Engagement Segmentation
+   Segments restaurants by order frequency: First-Time / Repeat / Loyal
+   Reveals which restaurant tier drives platform GMV.
+   Business use: Partner retention strategy, promotional targeting */
 
+WITH RestaurantOrders AS (
+    SELECT
+        r.restaurant_name,
+        COUNT(o.order_id)                                    AS Total_orders,
+        ROUND(SUM(o.price), 2)                               AS Total_revenue,
+        MIN(d.order_date)                                    AS first_order_date,
+        MAX(d.order_date)                                    AS last_order_date,
+        DATEDIFF(DAY, MIN(d.order_date), MAX(d.order_date)) AS active_days
+    FROM fact_orders o
+    INNER JOIN dim_restaurants r ON o.restaurant_id = r.restaurant_id
+    INNER JOIN dim_date d        ON o.date_id = d.date_id
+    GROUP BY r.restaurant_name
+),
+Segmented AS (
+    SELECT *,
+        /* Thresholds based on dataset distribution:
+           Loyal = 100+ orders (national chains like KFC, McDonald's)
+           Repeat = 2-100 orders (local outlets with consistent demand)
+           First-Time = 1 order (single transaction, no return) */
+        CASE
+            WHEN Total_orders = 1   THEN 'First-Time'
+            WHEN Total_orders <= 100 THEN 'Repeat'
+            ELSE                         'Loyal'
+        END AS restaurant_segment
+    FROM RestaurantOrders
+)
+SELECT
+    restaurant_segment,
+    COUNT(*)                                                              AS restaurant_count,
+    CAST(COUNT(*) * 100.0 /
+         (SUM(COUNT(*)) OVER ()) AS DECIMAL(10,2))                       AS pct_restaurants,
+    SUM(Total_orders)                                                     AS segment_orders,
+    CAST(SUM(Total_orders) * 100.0 /
+         (SUM(SUM(Total_orders)) OVER ()) AS DECIMAL(10,2))              AS pct_orders,
+    ROUND(SUM(Total_revenue), 0)                                         AS segment_revenue,
+    CAST(100.0 * SUM(Total_revenue) /
+         (SUM(SUM(Total_revenue)) OVER ()) AS DECIMAL(10,2))             AS pct_revenue,
+    ROUND(SUM(Total_revenue) / SUM(Total_orders), 2)                     AS avg_order_value,
+    ROUND(CAST(AVG(active_days) AS FLOAT), 0)                            AS avg_active_days
+FROM Segmented
+GROUP BY restaurant_segment
+ORDER BY segment_revenue DESC;
 
+/*
+OUTPUT:
+restaurant_segment	restaurant_count  pct_restaurants	segment_orders	pct_orders	segment_revenue	pct_revenue	avg_order_value  	avg_active_days
+Loyal	                414	                42.07	      169351	      85.78	       46385929      	87.50	    273.9	          240
+Repeat	                566	                57.52	      28075	          14.22	       6624733	        12.50	    235.97	          226
+First-Time	              4	                0.41	       4	           0.00	          1844	         0.00	    460.98	            0
+*/
+
+/*
+KEY INSIGHTS:
+1. 42% of restaurants (Loyal) generate 87.5% of total revenue — stronger
+   than the classic 80/20 rule. Platform GMV is heavily concentrated in
+   national chain partners.
+2. Loyal restaurants also dominate order volume: 85.78% of all 197K+
+   orders flow through just 414 restaurants.
+3. AOV gap is surprisingly narrow — Loyal (₹273.90) vs Repeat (₹235.97).
+   The revenue difference is driven by order volume, not ticket size.
+   This means Repeat restaurants have untapped volume potential, not a
+   pricing problem.
+4. First-Time restaurants (4 outlets, 0 active days) ordered on a single
+   day and never returned — early churn signal worth monitoring.
+*/
