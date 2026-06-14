@@ -76,6 +76,26 @@
 
 ---
 
+## 📓 Notebook Walkthrough
+
+**`notebooks/Swiggy_sales_analysis.ipynb`**
+
+| Section | What's Covered |
+|---|---|
+| Data Loading | 5 CSVs loaded from star schema structure |
+| Data Quality Checks | `.shape`, `.info()`, `.isnull()`, `.duplicated()`, `.describe()` on all 5 tables |
+| Date Fix & Feature Engineering | `order_date` dtype fix · Added `year`, `month`, `month_name`, `day_of_week`, `is_weekend` |
+| Outlier Detection | IQR method — upper fence ₹614, 5% flagged as high-value |
+| Restaurant Analysis | Revenue, AOV, order count — top 10 ranked by total revenue |
+| Dish Analysis | Top 10 dishes by revenue, premium pricing pattern |
+| Category Analysis | Revenue, AOV, and order count across all food categories — top 10 ranked |
+| Time Trends | Monthly order + revenue trend (Jan–Aug), W-shaped pattern identified |
+| Weekend vs Weekday | Revenue, orders, and AOV split — 71% weekday dominance |
+| City Analysis | Top 10 cities by revenue and by AOV — Bengaluru vs Panaji contrast |
+| Price vs Rating | Boxplot + correlation (r ≈ 0.03) — no meaningful relationship |
+
+---
+
 ## 📊 Power BI Dashboard
 
 **5 pages · 40+ DAX measures · Drill-through enabled**
@@ -107,7 +127,7 @@
 
 ### 📸 Dashboard Preview
 
-![Executive Overview](screenshots/01-executive-overview.png)
+![Executive Overview](https://github.com/sourabh0020/swiggy-sales-analysis-/blob/main/Swiggy%20Sales%20Dashboad/Executive%20Overview.png)
 
 ![Restaurant Intelligence](screenshots/02-restaurant-intelligence.png)
 
@@ -116,26 +136,6 @@
 ![Product & Category](screenshots/04-product-category.png)
 
 ![Executive Summary](screenshots/05-executive-summary.png)
-
-## 📓 Notebook Walkthrough
-
-**`notebooks/Swiggy_sales_analysis.ipynb`**
-
-| Section | What's Covered |
-|---|---|
-| Data Loading | 5 CSVs loaded from star schema structure |
-| Data Quality Checks | `.shape`, `.info()`, `.isnull()`, `.duplicated()`, `.describe()` on all 5 tables |
-| Date Fix & Feature Engineering | `order_date` dtype fix · Added `year`, `month`, `month_name`, `day_of_week`, `is_weekend` |
-| Outlier Detection | IQR method — upper fence ₹614, 5% flagged as high-value |
-| Restaurant Analysis | Revenue, AOV, order count — top 10 ranked by total revenue |
-| Dish Analysis | Top 10 dishes by revenue, premium pricing pattern |
-| Category Analysis | Revenue, AOV, and order count across all food categories — top 10 ranked |
-| Time Trends | Monthly order + revenue trend (Jan–Aug), W-shaped pattern identified |
-| Weekend vs Weekday | Revenue, orders, and AOV split — 71% weekday dominance |
-| City Analysis | Top 10 cities by revenue and by AOV — Bengaluru vs Panaji contrast |
-| Price vs Rating | Boxplot + correlation (r ≈ 0.03) — no meaningful relationship |
-
----
 
 ## 🗂️ Repository Structure
 
