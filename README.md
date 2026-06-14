@@ -11,7 +11,7 @@
 |---|---|---|
 | Data Cleaning & EDA | Python (pandas, seaborn) | ✅ Complete |
 | Business Queries | SQL Server | ✅ Complete |
-| Dashboard | Power BI | 🔄 In Progress |
+| Dashboard | Power BI | ✅ Complete |
 
 ---
 
@@ -76,6 +76,47 @@
 
 ---
 
+## 📊 Power BI Dashboard
+
+**5 pages · 40+ DAX measures · Drill-through enabled**
+
+| Page | Description |
+|---|---|
+| Executive Overview | KPIs, monthly trends, weekend vs weekday split, key insights |
+| Restaurant Intelligence | Top 20 restaurants, AOV rankings, drill-through to detail |
+| Location & Geography | City/state performance, scatter plot, average ratings |
+| Product & Category | Dish analysis, category revenue, order patterns |
+| Executive Summary | Key findings, project overview, data source |
+
+### 🔢 Dashboard Stats
+- **197,430 orders** across **28 cities**
+- **993 restaurants** · **82,891 dishes** · **4,690 categories**
+- Date range: **Jan – Aug 2025**
+
+### ⚙️ DAX Measures Built
+
+| Measure | Type |
+|---|---|
+| Total Revenue, Total Orders, Avg Order Value | Base KPIs |
+| MoM Revenue Growth % | Time Intelligence |
+| Revenue YTD, Running Revenue | Cumulative |
+| Weekday/Weekend Revenue & Orders | Segmentation |
+| Top Restaurant, Top City, Top Category | Dynamic labels |
+| Dashboard Subtitle | Dynamic title |
+| Revenue % of Total, Rev % of City | Share analysis |
+
+### 📸 Dashboard Preview
+
+![Executive Overview](screenshots/01-executive-overview.png)
+
+![Restaurant Intelligence](screenshots/02-restaurant-intelligence.png)
+
+![Location & Geography](screenshots/03-location-geography.png)
+
+![Product & Category](screenshots/04-product-category.png)
+
+![Executive Summary](screenshots/05-executive-summary.png)
+
 ## 📓 Notebook Walkthrough
 
 **`notebooks/Swiggy_sales_analysis.ipynb`**
@@ -113,7 +154,7 @@ swiggy-sales-analysis/
 │   └── Swiggy_sales_analysis.ipynb
 │
 ├── sql/                          
-│   ├── 01_create_tables.sql
+│   ├── 01_Imported CSV file into SQL Database.sql
 │   ├── 02_basic_kpi_queries.sql
 │   ├── 03_restaurant_analysis.sql
 │   ├── 04_time_trends.sql
@@ -121,13 +162,17 @@ swiggy-sales-analysis/
 │   ├── 06_dish_category.sql
 │   └── 07_advanced_window_functions.sql
 │
-├── powerbi/                      ← coming soon
-│   └── Swiggy_Dashboard.pbix
-│
-├── screenshots/                  ← coming soon
-│   └── dashboard_preview.png
+├── powerbi/
+├── PDF/Swiggy_Sales_Analysis.pdf
+├── screenshots/
+│   ├── 01-executive-overview.png
+│   ├── 02-restaurant-intelligence.png
+│   ├── 03-location-geography.png
+│   ├── 04-product-category.png
+│   └── 05-executive-summary.png
 │
 └── README.md
+| **pbix source file available on request via LinkedIn**
 ```
 
 ---
@@ -155,15 +200,22 @@ jupyter notebook notebooks/Swiggy_sales_analysis.ipynb
 - [x] Data cleaning & EDA in Python
 - [x] Category-wise revenue, AOV, and order analysis
 - [x] 20 business SQL queries (KPIs, window functions, CTEs)
-- [ ] Power BI star schema data model
-- [ ] Power BI 4-page interactive dashboard
-- [ ] Dashboard screenshot in README
+- [x] Power BI star schema data model (5-table star schema)
+- [x] Power BI 5-page interactive dashboard
+- [x] Dashboard screenshots in README
 
 ---
 
 ## 🧠 Skills Demonstrated
 
-`Exploratory Data Analysis` · `Star Schema / Data Modeling` · `Feature Engineering` · `Outlier Detection (IQR)` · `Category & Menu Analysis` · `pandas` · `seaborn` · `matplotlib` · `Business Insight Communication` ,  `SQL(KPIs, window functions, CTEs) `
+`Exploratory Data Analysis` · `Star Schema / Data Modeling` · 
+`Feature Engineering` · `Outlier Detection (IQR)` · 
+`Category & Menu Analysis` · `pandas` · `seaborn` · 
+`matplotlib` · `Business Insight Communication` · 
+`SQL (KPIs, Window Functions, CTEs)` · `Power BI` · 
+`DAX` · `Time Intelligence` · `Data Visualization` · 
+`Drill-through Reports` · `Dynamic Titles` · 
+`Conditional Formatting`
 
 ---
 
