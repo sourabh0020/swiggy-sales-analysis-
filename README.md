@@ -129,13 +129,13 @@
 
 ![Executive Overview](https://github.com/sourabh0020/swiggy-sales-analysis-/blob/main/Swiggy%20Sales%20Dashboad/Executive%20Overview.png)
 
-![Restaurant Intelligence](screenshots/02-restaurant-intelligence.png)
+![Restaurant Intelligence](https://github.com/sourabh0020/swiggy-sales-analysis-/blob/main/Swiggy%20Sales%20Dashboad/Restaurant%20Intelligence.png)
 
-![Location & Geography](screenshots/03-location-geography.png)
+![Location & Geography](https://github.com/sourabh0020/swiggy-sales-analysis-/blob/main/Swiggy%20Sales%20Dashboad/Location%20%26%20Geography.png)
 
-![Product & Category](screenshots/04-product-category.png)
+![Product & Category](https://github.com/sourabh0020/swiggy-sales-analysis-/blob/main/Swiggy%20Sales%20Dashboad/Product%20%26%20category%20.png)
 
-![Executive Summary](screenshots/05-executive-summary.png)
+![Executive Summary](https://github.com/sourabh0020/swiggy-sales-analysis-/blob/main/Swiggy%20Sales%20Dashboad/Executive%20Summary.png)
 
 ## 🗂️ Repository Structure
 
