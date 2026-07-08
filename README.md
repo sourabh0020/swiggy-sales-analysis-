@@ -1,7 +1,7 @@
 # 🍊 Swiggy Sales Analysis
 
 > End-to-end data analysis project on 197,430 Swiggy orders across 28 Indian cities.  
-> Built using Python (EDA complete) · SQL Server (in progress) · Power BI (in progress)
+> Built using Python (EDA complete) · SQL Server · Power BI
 
 ---
 
