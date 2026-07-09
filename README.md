@@ -27,9 +27,6 @@
 | `dim_locations` | 995 | State, city, and locality across 28 Indian cities |
 | `dim_dish` | 82,891 | Dish names and food categories |
 
->  Raw CSVs available in `/data/Raw/`.
->  Cleaned CSVs available in `/data/cleaned/`.
-
 ---
 
 ## 🛠️ Tools & Technologies used and will be used for further analysis -
